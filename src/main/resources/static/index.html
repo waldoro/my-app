@@ -1,0 +1,111 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>myApp</title>
+    <meta name="description" content="">
+    <meta name="google" value="notranslate">
+    <meta name="viewport" content="width=device-width">
+    <script type="text/javascript" src="./bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="./bower_components/angular-resource/angular-resource.min.js"></script>
+    <script type="text/javascript" src="./bower_components/lodash/dist/lodash.min.js"></script>
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css content/css/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.css">
+    <!-- endinject -->
+    <link rel="stylesheet" href="content/css/vendor.css">
+    <!-- endbuild -->
+    <!-- build:css content/css/main.css -->
+    <link rel="stylesheet" href="content/css/main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <!-- endbuild -->
+</head>
+<body ng-app="myApp" ng-strict-di>
+    <!--[if lt IE 9]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <page-ribbon></page-ribbon>
+    <div ui-view="navbar" ng-cloak></div>
+    <div class="container">
+        <div class="well" ui-view="content">
+            <!-- Angular views -->
+        </div>
+        <p><input id="title" type="text" placeholder="title"/></p>
+
+        <p><input id="description" type="textarea" placeholder="description"/></p>
+        <div id="add">Add</div>
+        <div id="update">Update list</div>
+        <div id="filter">Filter</div>
+        <p></p>
+        <div id="taskList">
+        
+        </div>
+
+        <div class="footer" ng-cloak>
+            <p data-translate="footer">This is your footer hahaha</p>
+        </div>
+    </div>
+    <script type="text/javascript" src="./app/app.js"></script>
+    <script type="text/javascript" src="./app/controllers.js"></script>
+    <script type="text/javascript" src="./app/services.js"></script>
+</body>
+
+<script>
+    (function() {
+        $("#add").click(function () {
+            var task = {};
+            task['title'] = $("#title").val();
+            task['description'] = $("#description").val();
+            $.ajax({
+                  url: "/task/add",
+                  type: "POST",
+                  dataType: "json", // expected format for response
+                  contentType: "application/json", // send as JSON
+                  data: JSON.stringify(task),
+
+                  complete: function() {
+                    //called when complete
+                  },
+
+                  success: function() {
+                    //called when successful
+                 },
+
+                  error: function() {
+                    //called when there is an error
+                  },
+                });
+        });
+        $("#update").click(function () {
+            $.get("/task/getall", function( data ) {
+                $("#taskList div").remove();
+                for(var i=0;i<data.length;i++) {
+                    var div = $("<div></div>");
+                    var createdDate = new Date(data[i].createdTimestamp);
+                    div.append("Created:" + createdDate.getDay() + "-" + createdDate.getMonth()+ "-" + createdDate.getFullYear());
+                    div.append("Title:" + data[i].title);
+                    div.append("Description:" + data[i].description);
+                    $("#taskList").append(div);
+                }
+            });
+        });
+        
+        $("#filter").click(function () {
+            $.get("/task",{"description":"zagrac"}, function( data ) {
+                $("#taskList div").remove();
+                for(var i=0;i<data.length;i++) {
+                    var div = $("<div></div>");
+                    var createdDate = new Date(data[i].createdTimestamp);
+                    div.append("Created:" + createdDate.getDay() + "-" + createdDate.getMonth()+ "-" + createdDate.getFullYear());
+                    div.append("Title:" + data[i].title);
+                    div.append("Description:" + data[i].description);
+                    $("#taskList").append(div);
+                }
+            });
+        });
+            
+    })();
+</script>
+</html>
